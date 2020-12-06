@@ -1,0 +1,30 @@
+{
+    "data": {
+        "pp": 100,
+        "psoe": 90,
+        "podemos": 30,
+        "ciudadanos": 50,
+        "vox": 70,
+        "pacma": 10
+    },
+    "worries": {
+        "pp": "Eta, paro, independentistas",
+        "psoe": "covid, paro, ps5",
+        "podemos": "amor, paz, paro",
+        "ciudadanos": "cataluña, paro, covid",
+        "vox": "españa, franco, inmigrantes",
+        "pacma": "animales, paro, andaluci"
+    },
+    "undecided": [
+        {
+            "partidos": "psoe-podemos",
+            "count": 3400,
+            "worries": "paro, covid, vox"
+        },
+        {
+            "partidos": "vox-pp",
+            "count": 54000,
+            "worries": "confinamiento, paro, catalanes"
+        }
+    ]
+}

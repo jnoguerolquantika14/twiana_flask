@@ -39,12 +39,12 @@ def remove_badWords(word):
 def find_sense(list_words):
     posi = list()
     nega = list()
-    for lines in open('diccionarios/positivas.txt').readlines():
+    for lines in open('diccionarios/positivas.txt', encoding='utf8').readlines():
         lines = lines.replace("\n", "")
         for word in list_words:
             if lines.lower() == replace_acentos(remove_badWords(word.lower())):
                 posi.append(lines)
-    for lines in open('diccionarios/negativas.txt').readlines():
+    for lines in open('diccionarios/negativas.txt', encoding='utf8').readlines():
         lines = lines.replace("\n", "")
         for word in list_words:
             if lines.lower() == replace_acentos(remove_badWords(word.lower())):
@@ -54,18 +54,22 @@ def find_sense(list_words):
 
 def find_words(partidos, file, texto_full, field):
     text = texto_full.split()
-    array_words = []
+    array_words = [] #Array de las palabras de texto_full
+    
     for word in text:
         array_words.append(word.lower())
 
+
     # Abrimos el archivo y lo recorremos
-    f = open(file, "r")
+    f = open(file, "r", encoding='utf8')
     lineas = f.readlines()
     scaned = list()
     for line in lineas:
         line = line.replace("\n", "")
         words = line.split("|||")
+
         for text in array_words:
+            
             if len(text) > 3 or field == 'username':
                 if text in words[1].lower() or text in words[1]:
                     scan = True

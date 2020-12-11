@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+
 import config
 import difflib
 
@@ -39,18 +42,20 @@ def remove_badWords(word):
 def find_sense(list_words):
     posi = list()
     nega = list()
-    for lines in open('diccionarios/positivas.txt', encoding='utf8').readlines():
-        lines = lines.replace("\n", "")
-        for word in list_words:
-            if lines.lower() == replace_acentos(remove_badWords(word.lower())):
-                posi.append(lines)
-    for lines in open('diccionarios/negativas.txt', encoding='utf8').readlines():
-        lines = lines.replace("\n", "")
-        for word in list_words:
-            if lines.lower() == replace_acentos(remove_badWords(word.lower())):
-                nega.append(lines)
-    return posi, nega
 
+    positive_words=open('diccionarios/positivas.txt', encoding='utf8').read().splitlines()#Palabras positivas
+    negative_words=open('diccionarios/negativas.txt', encoding='utf8').read().splitlines()#Palabras negativas
+
+    for word in list_words: #Palabras que vienen por parámetro
+        for positive in positive_words: 
+            if positive.lower() == replace_acentos(remove_badWords(word.lower())): #Si hay una coincidencia
+                posi.append(positive)
+
+        for negative in negative_words:
+            if negative.lower() == replace_acentos(remove_badWords(word.lower())): #Si hay una coincidencia
+                nega.append(negative)
+
+    return posi, nega
 
 def find_words(partidos, file, texto_full, field):
     text = texto_full.split()
@@ -59,54 +64,62 @@ def find_words(partidos, file, texto_full, field):
     for word in text:
         array_words.append(word.lower())
 
-
     # Abrimos el archivo y lo recorremos
     f = open(file, "r", encoding='utf8')
-    lineas = f.readlines()
+    lineas = f.read().splitlines()
     scaned = list()
-    for line in lineas:
-        line = line.replace("\n", "")
-        words = line.split("|||")
+        
+    for line in lineas: #Partido/Hashtag/Palabra del fichero
+        words = line.split("|||") #Partido/Hashtag/Palabra del fichero
 
-        for text in array_words:
+        for text in array_words: # Cada palabra del tweet
             
             if len(text) > 3 or field == 'username':
+                
                 if text in words[1].lower() or text in words[1]:
+                    
                     scan = True
-                    for sca in scaned:
+                    for sca in scaned: #sca será false si la palabra ya ha sido analizada
                         if text == sca:
                             scan = False
                     if scan:
                         coinciden = 1
+                    
                         if len(text) != len(words[1]):
                             try:
-                                coinciden = difflib.SequenceMatcher(None, text, words[1]).ratio()
+                                coinciden = difflib.SequenceMatcher(None, text, words[1]).ratio() #¿Cuánto se parecen?
                             except:
                                 coinciden = 0
-                        if coinciden > 0.9:
+                        if coinciden > 0.6: #La palabra del tweet supera el umbral para ser parecida a la palabra del fichero
                             scaned.append(text)
+
                             if field == 'description':
                                 partidos = compute_score(
                                     partidos, words, config.puntuacion_description)
+                    
                             elif field == 'username':
                                 partidos = compute_score(
                                     partidos, words, config.puntuacion_nombre)
                             elif field == 'account':
                                 partidos = compute_score(
                                     partidos, words, config.puntuacion_account)
-                            elif field == 'tweets_pos' or field == 'tweets_neg' or field == 'tweets_neu':
+                            elif field == 'tweets-pos' or field == 'tweets-neg' or field == 'tweets-neu':
                                 posi, nega = find_sense(array_words)
-                                if len(posi) > len(nega) and field == 'tweets_pos':
-                                    # print('Tweet positivo: ' + texto_full)
+
+                                if len(posi) > len(nega) and field == 'tweets-pos':
+                                    #print('#####################\nTweet positivo: ' + texto_full)
                                     partidos = compute_score(
                                         partidos, words, config.puntuacion_tweet_positivo)
-                                elif len(posi) < len(nega) and field == 'tweets_neg':
-                                    # print('Tweet negativo: ' + texto_full)
+                                elif len(posi) < len(nega) and field == 'tweets-neg':
+                                    #print('#####################\nTweet negativo: ' + texto_full)
                                     partidos = compute_score(
                                         partidos, words, config.puntuacion_tweet_negativo)
-                                elif len(posi) == len(nega) and field == 'tweets_neu':
-                                    # print('Tweet neutro: ' + texto_full)
+                                elif len(posi) == len(nega) and field == 'tweets-neu':
+                                    #print('#####################\nTweet neutro: ' + texto_full)
                                     partidos = compute_score(
                                         partidos, words, config.puntuacion_tweet_neutro)
+            
     f.close()
+    
     return partidos
+

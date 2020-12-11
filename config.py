@@ -22,8 +22,8 @@ limite_friends = 20  # Limite de friends de la API
 limite_tweets_db = 100
 
 # PUNTUACIONES
-puntuacion_tweet_positivo = 5
-puntuacion_tweet_negativo = 5
+puntuacion_tweet_positivo = 1
+puntuacion_tweet_negativo = 1
 puntuacion_tweet_neutro = 1
 puntuacion_description = 26
 puntuacion_nombre = 100

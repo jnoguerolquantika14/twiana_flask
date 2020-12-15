@@ -45,7 +45,7 @@ def restart_result():
     }
 
 
-def retrieve_data(account,limite_tweets_apionly):
+def retrieve_user_data(account,limite_tweets_apionly):
     global API
     global initial_result
     # 1.- Tomamos la cuenta a analizar
@@ -66,11 +66,10 @@ def retrieve_data(account,limite_tweets_apionly):
     name = user.name
     description = user.description
 
-    # profile_image_url=user.profile_image_url
     # Modo extendido para que no se trunquen los tweets
-
     user_timeline = API.user_timeline(account, count=limite_tweets_apionly, tweet_mode='extended')
 
+    user_data={'account':account,'name':name,'description':description, 'tweets':[]}
     try:
         
         # 5.- Computa resultados para la Account, Username y Description
@@ -82,27 +81,29 @@ def retrieve_data(account,limite_tweets_apionly):
         my_results['description'] = utils.find_words(my_results['description'], 'diccionarios/compare_accounts.txt', description, 'description')
                 
         # 6.- Recorre el timeline Tweet a Tweet para computar los resultados de:  
-        process_timeline(my_results,user_timeline)
+        process_timeline(my_results,user_timeline,user_data)
 
+        
     except Exception as e:
         print('Ocurrió una excepción => \n')
         traceback.print_exc()
-    return my_results
+    return my_results, user_data
 
-def process_timeline(my_results,user_timeline):
+def process_timeline(my_results,user_timeline,user_data):
     types = ["tweets-pos", "tweets-neg", "tweets-neu"]
     threads = []
     thread_results=[]
 
+    tweets_set= set()
     q = queue.Queue()
 
-    t0 = threading.Thread(target=process_tweet_types, name='Positive tweets', args=(my_results,user_timeline,types[0],q))
+    t0 = threading.Thread(target=process_tweet_types, name='Positive tweets', args=(my_results,user_timeline,types[0],q,tweets_set))
     threads.append(t0)
     
-    t1 = threading.Thread(target=process_tweet_types, name='Negative tweets', args=(my_results,user_timeline,types[1],q))
+    t1 = threading.Thread(target=process_tweet_types, name='Negative tweets', args=(my_results,user_timeline,types[1],q,tweets_set))
     threads.append(t1)
     
-    t2 = threading.Thread(target=process_tweet_types, name='Neutral tweets', args=(my_results,user_timeline,types[2],q))
+    t2 = threading.Thread(target=process_tweet_types, name='Neutral tweets', args=(my_results,user_timeline,types[2],q,tweets_set))
     threads.append(t2)
 
     #Comenzar cada hilo
@@ -115,8 +116,10 @@ def process_timeline(my_results,user_timeline):
     for thread in threads:
         thread.join()
 
+    #Recogemos los tweets (no repetidos) en forma de lista
+    user_data['tweets']=list(tweets_set)
 
-def process_tweet_types(my_results,user_timeline,tweet_type,q):
+def process_tweet_types(my_results,user_timeline,tweet_type,q,tweets_set):
 
     restart_result()
     my_results[tweet_type] = initial_result
@@ -128,6 +131,7 @@ def process_tweet_types(my_results,user_timeline,tweet_type,q):
         my_results[tweet_type] = utils.find_words(
                         my_results[tweet_type], 'diccionarios/compare_accounts.txt', tweet.full_text, tweet_type)
     
+        tweets_set.add(tweet.full_text)
     q.put({tweet_type:my_results[tweet_type]})
 
 def select_api_key():
@@ -142,25 +146,26 @@ def connect_tweepy(api_key):
                           api_key['access_token_secret'])
     API = tweepy.API(auth)
 
-
+'''
 def create_json_result(account,tweets_limit):
-    final_file = open('results.json', 'w')
+    final_file = open('account_analysis.json', 'w')
     final_file.write('[\n')
-    json_result=retrieve_data(account,tweets_limit)
+    json_result,user_data=retrieve_user_data(account,tweets_limit)
     json.dump(json_result, final_file, indent = 4, sort_keys = False)
 
     final_file.write(']')
-    return json_result
+    return json_result,user_data
+'''
 
-
-def parse_json_attrs(user,politic_parties,attribute):
-    tamo = user.pop(attribute) #Se toma todo el contenido del atributo
+def parse_json_attrs(dict,politic_parties,attribute):
+    tamo = dict.pop(attribute) #Se toma todo el contenido del atributo
     for party in politic_parties:
-        user[attribute+"_"+party] = tamo[party] #Se extrae el valor de cada array del atributo
+        dict[attribute+"_"+party] = tamo[party] #Se extrae el valor de cada array del atributo
 
 def modelo_Logit_binom(json_entrenamiento):
     with open(json_entrenamiento) as f:
         data = json.load(f)
+
     # Creación de las variables anidadas en las listas
     partidos = ["pp", "psoe", "vox", "podemos", "cs", "pacma"]
     for user in data:
@@ -172,7 +177,7 @@ def modelo_Logit_binom(json_entrenamiento):
         parse_json_attrs(user,partidos,"tweets-neu") # Tweets - Neutros
         
     datos_final = pd.DataFrame(data)
-    
+
     # Arreglo de valores de la variable iv
     datos_final.loc[datos_final['iv'] == 'pp\n', 'iv'] = 'pp'
     datos_final.loc[datos_final['iv'] == 'psoe\n', 'iv'] = 'psoe'
@@ -220,19 +225,17 @@ def modelo_Logit_binom(json_entrenamiento):
         
         joblib.dump(LR, f'modelo_{partidos[i]}.pkl')
 
-def funcion_ev_Logit_binom(json_user):
-    with open(json_user) as f:
-        data2 = json.load(f)
+def funcion_ev_Logit_binom(user_clasif):
+    
     # Creación de las variables anidadas en las listas
     partidos = ["pp", "psoe", "vox", "podemos", "cs", "pacma"]
-    for user in data2:
-        parse_json_attrs(user,partidos,"account") # Account
-        parse_json_attrs(user,partidos,"username") # Username
-        parse_json_attrs(user,partidos,"description") # Description
-        parse_json_attrs(user,partidos,"tweets-pos") # Tweets - Positivos
-        parse_json_attrs(user,partidos,"tweets-neg") # Tweets - Negativos
-        parse_json_attrs(user,partidos,"tweets-neu") # Tweets - Neutros
-    datos_final_nuevos = pd.DataFrame(data2)
+    parse_json_attrs(user_clasif,partidos,"account") # Account
+    parse_json_attrs(user_clasif,partidos,"username") # Username
+    parse_json_attrs(user_clasif,partidos,"description") # Description
+    parse_json_attrs(user_clasif,partidos,"tweets-pos") # Tweets - Positivos
+    parse_json_attrs(user_clasif,partidos,"tweets-neg") # Tweets - Negativos
+    parse_json_attrs(user_clasif,partidos,"tweets-neu") # Tweets - Neutros
+    datos_final_nuevos = pd.DataFrame(user_clasif, index=[0])
     ##########################################################
     
     clasif = pd.DataFrame([])
@@ -257,14 +260,15 @@ def funcion_ev_Logit_binom(json_user):
 
     clasif["clasif2"] = probab[['pp', 'psoe', 'vox', 'podemos', 'cs', 'pacma']].idxmax(axis = 1)
 
-    pred=clasif.iloc[:,[0,7]]
-    return pred
+    clasif_result=clasif.iloc[:,[0,7]]
+    return clasif_result
 
 global CURR_DIR
 CURR_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def twiana(account,limite_tweets_apionly):
-    json_user=create_json_result(account,limite_tweets_apionly)
-    json_entrenamiento=modelo_Logit_binom(CURR_DIR+'/results-v3.json')
-    df_result=funcion_ev_Logit_binom(CURR_DIR+'/results.json')
-    return json_user, df_result
+    user_analysis,user_data=retrieve_user_data(account,limite_tweets_apionly)
+    modelo_Logit_binom(CURR_DIR+'/train.json')
+    user_clasif=funcion_ev_Logit_binom(user_analysis)
+    return user_analysis, user_clasif, user_data
+

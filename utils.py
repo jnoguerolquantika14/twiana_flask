@@ -5,7 +5,7 @@ import config
 import difflib
 
 
-def compute_score(results, p, score):
+def compute_score(results, p, score): #Suma la puntuación score al partido p en el diccionario results
     results[p[0]] += score
     return results
 
@@ -39,7 +39,7 @@ def remove_badWords(word):
     return word
 
 
-def find_sense(list_words):
+def find_sense(list_words): #Devuelve una lista con las palabras positivas y negativas a partir de una lista de palabras
     posi = list()
     nega = list()
 
@@ -74,9 +74,9 @@ def find_words(partidos, file, texto_full, field):
 
         for text in array_words: # Cada palabra del tweet
             
-            if len(text) > 3 or field == 'username':
+            if len(text) > 3 or field == 'username': #Solo se analizan las palabras de más de 3 caracteres o si es un username
                 
-                if text in words[1].lower() or text in words[1]:
+                if text in words[1].lower() or text in words[1]: #Si la palabra del tweet está contenida en la palabra o hashtag
                     
                     scan = True
                     for sca in scaned: #sca será false si la palabra ya ha sido analizada
@@ -85,41 +85,37 @@ def find_words(partidos, file, texto_full, field):
                     if scan:
                         coinciden = 1
                     
-                        if len(text) != len(words[1]):
+                        if len(text) != len(words[1]): #Si no son la misma palabra, se analiza cuánto se parecen
                             try:
                                 coinciden = difflib.SequenceMatcher(None, text, words[1]).ratio() #¿Cuánto se parecen?
                             except:
                                 coinciden = 0
                         if coinciden > 0.6: #La palabra del tweet supera el umbral para ser parecida a la palabra del fichero
-                            scaned.append(text)
-
+                            scaned.append(text) #Esta palabra ya va a ser analizada
+                            #Determinamos la puntuación de esa palabra dependiendo de que parte de los datos de Twitter se trata
                             if field == 'description':
                                 partidos = compute_score(
                                     partidos, words, config.puntuacion_description)
-                    
                             elif field == 'username':
                                 partidos = compute_score(
                                     partidos, words, config.puntuacion_nombre)
                             elif field == 'account':
                                 partidos = compute_score(
                                     partidos, words, config.puntuacion_account)
+
                             elif field == 'tweets-pos' or field == 'tweets-neg' or field == 'tweets-neu':
                                 posi, nega = find_sense(array_words)
-
                                 if len(posi) > len(nega) and field == 'tweets-pos':
-                                    #print('#####################\nTweet positivo: ' + texto_full)
                                     partidos = compute_score(
                                         partidos, words, config.puntuacion_tweet_positivo)
                                 elif len(posi) < len(nega) and field == 'tweets-neg':
-                                    #print('#####################\nTweet negativo: ' + texto_full)
                                     partidos = compute_score(
                                         partidos, words, config.puntuacion_tweet_negativo)
                                 elif len(posi) == len(nega) and field == 'tweets-neu':
-                                    #print('#####################\nTweet neutro: ' + texto_full)
                                     partidos = compute_score(
                                         partidos, words, config.puntuacion_tweet_neutro)
             
     f.close()
     
-    return partidos
+    return partidos #Devuelve el diccionario con los valores de cada partido
 

@@ -69,7 +69,7 @@ def retrieve_user_data(account,limite_tweets_apionly):
     # Modo extendido para que no se trunquen los tweets
     user_timeline = API.user_timeline(account, count=limite_tweets_apionly, tweet_mode='extended')
 
-    user_data={'account':account,'name':name,'description':description, 'tweets':[]}
+    user_data={'account':account,'name':name,'description':description, 'tweets':[]} #Los datos del usuario
     try:
         
         # 5.- Computa resultados para la Account, Username y Description
@@ -120,7 +120,7 @@ def process_timeline(my_results,user_timeline,user_data):
     user_data['tweets']=list(tweets_set)
 
 def process_tweet_types(my_results,user_timeline,tweet_type,q,tweets_set):
-
+    #Inicializa el diccionario para este tipo de tweet
     restart_result()
     my_results[tweet_type] = initial_result
 
@@ -146,18 +146,7 @@ def connect_tweepy(api_key):
                           api_key['access_token_secret'])
     API = tweepy.API(auth)
 
-'''
-def create_json_result(account,tweets_limit):
-    final_file = open('account_analysis.json', 'w')
-    final_file.write('[\n')
-    json_result,user_data=retrieve_user_data(account,tweets_limit)
-    json.dump(json_result, final_file, indent = 4, sort_keys = False)
-
-    final_file.write(']')
-    return json_result,user_data
-'''
-
-def parse_json_attrs(dict,politic_parties,attribute):
+def parse_json_attrs(dict,politic_parties,attribute):#Renombra todos los atributos del diccionario a atributo_partido
     tamo = dict.pop(attribute) #Se toma todo el contenido del atributo
     for party in politic_parties:
         dict[attribute+"_"+party] = tamo[party] #Se extrae el valor de cada array del atributo
@@ -168,7 +157,7 @@ def modelo_Logit_binom(json_entrenamiento):
 
     # Creación de las variables anidadas en las listas
     partidos = ["pp", "psoe", "vox", "podemos", "cs", "pacma"]
-    for user in data:
+    for user in data: #Para cada usuario del json se renombran los atributos
         parse_json_attrs(user,partidos,"account") # Account
         parse_json_attrs(user,partidos,"username") # Username
         parse_json_attrs(user,partidos,"description") # Description
@@ -176,7 +165,7 @@ def modelo_Logit_binom(json_entrenamiento):
         parse_json_attrs(user,partidos,"tweets-neg") # Tweets - Negativos
         parse_json_attrs(user,partidos,"tweets-neu") # Tweets - Neutros
         
-    datos_final = pd.DataFrame(data)
+    datos_final = pd.DataFrame(data) #Creamos una dataframe
 
     # Arreglo de valores de la variable iv
     datos_final.loc[datos_final['iv'] == 'pp\n', 'iv'] = 'pp'
@@ -225,17 +214,17 @@ def modelo_Logit_binom(json_entrenamiento):
         
         joblib.dump(LR, f'modelo_{partidos[i]}.pkl')
 
-def funcion_ev_Logit_binom(user_clasif):
+def funcion_ev_Logit_binom(user_analysis):
     
-    # Creación de las variables anidadas en las listas
+    # Para el usuario del diccionario se renombran los atributos
     partidos = ["pp", "psoe", "vox", "podemos", "cs", "pacma"]
-    parse_json_attrs(user_clasif,partidos,"account") # Account
-    parse_json_attrs(user_clasif,partidos,"username") # Username
-    parse_json_attrs(user_clasif,partidos,"description") # Description
-    parse_json_attrs(user_clasif,partidos,"tweets-pos") # Tweets - Positivos
-    parse_json_attrs(user_clasif,partidos,"tweets-neg") # Tweets - Negativos
-    parse_json_attrs(user_clasif,partidos,"tweets-neu") # Tweets - Neutros
-    datos_final_nuevos = pd.DataFrame(user_clasif, index=[0])
+    parse_json_attrs(user_analysis,partidos,"account") # Account
+    parse_json_attrs(user_analysis,partidos,"username") # Username
+    parse_json_attrs(user_analysis,partidos,"description") # Description
+    parse_json_attrs(user_analysis,partidos,"tweets-pos") # Tweets - Positivos
+    parse_json_attrs(user_analysis,partidos,"tweets-neg") # Tweets - Negativos
+    parse_json_attrs(user_analysis,partidos,"tweets-neu") # Tweets - Neutros
+    datos_final_nuevos = pd.DataFrame(user_analysis, index=[0])
     ##########################################################
     
     clasif = pd.DataFrame([])
@@ -267,8 +256,18 @@ global CURR_DIR
 CURR_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def twiana(account,limite_tweets_apionly):
-    user_analysis,user_data=retrieve_user_data(account,limite_tweets_apionly)
-    modelo_Logit_binom(CURR_DIR+'/train.json')
-    user_clasif=funcion_ev_Logit_binom(user_analysis)
-    return user_analysis, user_clasif, user_data
+    user_analysis,user_data=retrieve_user_data(account,limite_tweets_apionly) #Devuelve el analisis de la cuenta de Twitter y los datos que se han analizado
+
+    if not os.path.isfile(CURR_DIR+'/obj.pickle'):#Si no existen los modelos entrenados
+        modelo_Logit_binom(CURR_DIR+'/train.json') #Crea los modelos de cada partido a partir del json de entrenamiento
+
+    user_clasif=funcion_ev_Logit_binom(user_analysis) # Devuelve la clasificacion a partir del analisis de la cuenta de Twitter
+
+    user_analysis.pop('name') #Eliminamos el nombre de la cuenta
+ 
+    clasif=user_clasif.to_dict(orient='records') #Pasa el dataframe a un diccionario
+    clasif=clasif[0]
+    clasif.pop('usuario') #Eliminamos el nombre de la cuenta
+
+    return user_analysis, clasif['clasif2'], user_data
 

@@ -48,6 +48,7 @@ docker run -it --publish 5000:5000 twiana_flask
 ```
 Con esto, la aplición quedará en http://localhost:5000/service/prediction/account/. 
 Podemos especificar la cuenta a analizar añadiendo el nombre de usuario y opcionalmente, el número de tweets a analizar (máximo 200) http://localhost:5000/service/prediction/account/Quantika14?limit=200.
+
 Si queremos eliminar las imagenes descargadas:
 ``` python
 docker image prune  -a -f ; docker container prune -f ; docker image prune -a -f

@@ -44,14 +44,43 @@ def restart_result():
         "upyd": 0
     }
 
+initial_result_worries = {
+    "paro": 0,
+    "política": 0,
+    "corrupción": 0,
+    "problemas económicos": 0,
+    "sanidad": 0,
+    "inmigración": 0,
+    "problemas sociales": 0,
+    "educación": 0,
+    "pensiones": 0
+}
+
+
+def restart_result_worries():
+    global initial_result_worries
+    initial_result_worries = {
+    "paro": 0,
+    "política": 0,
+    "corrupción": 0,
+    "problemas económicos": 0,
+    "sanidad": 0,
+    "inmigración": 0,
+    "problemas sociales": 0,
+    "educación": 0,
+    "pensiones": 0
+}
 
 def retrieve_user_data(account,limite_tweets_apionly):
     global API
     global initial_result
+    global initial_result_worries
     # 1.- Tomamos la cuenta a analizar
 
     # Inicializa estructura resultados
     my_results = {}
+    worries={}
+    worries_joined=None
     my_results['name'] = account
 
     print("Analizando => @" + account+' con límite '+str(limite_tweets_apionly))
@@ -74,20 +103,27 @@ def retrieve_user_data(account,limite_tweets_apionly):
         
         # 5.- Computa resultados para la Account, Username y Description
         my_results['account'] = utils.find_words(initial_result, 'diccionarios/compare_accounts.txt', account, 'account')
+        worries['account'] = utils.find_worries(initial_result_worries, 'diccionarios/worries_words.txt', account, 'account')
         restart_result()
+        restart_result_worries()
         my_results['username'] = utils.find_words(initial_result, 'diccionarios/palabras_tweets.txt', name, 'username')
+        worries['username'] = utils.find_worries(initial_result_worries, 'diccionarios/worries_words.txt', name, 'username')
         restart_result()
+        restart_result_worries()
         my_results['description'] = utils.find_words(initial_result, 'diccionarios/palabras_tweets.txt', description, 'description')
         my_results['description'] = utils.find_words(my_results['description'], 'diccionarios/compare_accounts.txt', description, 'description')
-                
+        worries['description'] = utils.find_words(initial_result_worries, 'diccionarios/worries_words.txt', description, 'description')
+
         # 6.- Recorre el timeline Tweet a Tweet para computar los resultados de:  
         process_timeline(my_results,user_timeline,user_data)
+        process_timeline_worries(worries,user_timeline)
 
-        
+        worries_joined=utils.join_worries(worries)
+
     except Exception as e:
         print('Ocurrió una excepción => \n')
         traceback.print_exc()
-    return my_results, user_data
+    return my_results,worries_joined, user_data
 
 def process_timeline(my_results,user_timeline,user_data):
     types = ["tweets-pos", "tweets-neg", "tweets-neu"]
@@ -133,6 +169,45 @@ def process_tweet_types(my_results,user_timeline,tweet_type,q,tweets_set):
     
         tweets_set.add(tweet.full_text)
     q.put({tweet_type:my_results[tweet_type]})
+
+def process_timeline_worries(worries,user_timeline):
+    threads = []
+    thread_results=[]
+
+    tweets_set= set()
+    q = queue.Queue()
+
+    chunks_number=3
+    tweets_chunks=utils.split_tweets(user_timeline, chunks_number)
+
+    for i in range(chunks_number):
+
+        ti = threading.Thread(target=process_tweet_types_worries, name='Tweets {}'.format(i), args=(worries,tweets_chunks[i],i,q,tweets_set))
+        threads.append(ti)    
+
+    #Comenzar cada hilo
+    for thread in threads:
+        thread.start()
+        response = q.get()
+        thread_results.append(response)
+
+    worries["tweets"] = utils.join_dicts_in_list(thread_results)
+    #Terminar hilos
+    for thread in threads:
+        thread.join()
+
+def process_tweet_types_worries(worries,tweets_chunks,chunk_number,q,tweets_set):
+    #Inicializa el diccionario para este tipo de tweet
+    restart_result_worries()
+    worries["tweets"] = initial_result_worries
+
+    for tweet in tweets_chunks:
+
+        worries["tweets"] = utils.find_worries(
+                        worries["tweets"], 'diccionarios/worries_words.txt', tweet, "tweets")
+
+        tweets_set.add(tweet)
+    q.put({chunk_number:worries["tweets"]})
 
 def select_api_key():
     option = random.randint(1, 8)
@@ -256,8 +331,8 @@ global CURR_DIR
 CURR_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def twiana(account,limite_tweets_apionly):
-    user_analysis,user_data=retrieve_user_data(account,limite_tweets_apionly) #Devuelve el analisis de la cuenta de Twitter y los datos que se han analizado
-
+    user_analysis,worries,user_data=retrieve_user_data(account,limite_tweets_apionly) #Devuelve el analisis de la cuenta de Twitter y los datos que se han analizado
+    print(worries)
     if not os.path.isfile(CURR_DIR+'/obj.pickle'):#Si no existen los modelos entrenados
         modelo_Logit_binom(CURR_DIR+'/train.json') #Crea los modelos de cada partido a partir del json de entrenamiento
 

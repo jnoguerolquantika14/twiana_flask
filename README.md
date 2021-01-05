@@ -8,7 +8,7 @@ Versión 2.0 del proyecto Twiana
 ### Instalación
 Con la descarga del proyecto, abriremos una terminal en la carpeta que genera el .zip descargado.
 Instalamos docker:
-``` python
+``` bash
 #Desinstalamos versiones antiguas:
 sudo apt-get remove docker docker-engine docker.io containerd runc
 
@@ -39,18 +39,18 @@ ___
 ### Docker
 Podemos montar un contenedor en [Docker](https://www.docker.com/), donde se instalen las dependencias necesarias para que la aplicación funcione.
 Para ello, dentro de la carpeta del proyecto (donde se ubica el fichero [Dockerfile]) ejecutamos el comando de construcción del contenedor (nótese que es importante tener la terminal abierta en el directorio donde se encuentra el [Dockerfile]).
-``` python
+``` bash
 docker build -t twiana_flask .
 ```
 Docker creará una imagen basada en [python:3.8-slim], a la cual le añadiremos las dependencias del fichero [requirements]. Para ejecutar el contenedor llamado twiana_flask, lo publicaremos en el puerto 5000 (mapeando el puerto de la aplicación dentro del contenedor, qur también es la 5000) ejecutando el siguiente comando:
-``` python
+``` bash
 docker run -it --publish 5000:5000 twiana_flask
 ```
 Con esto, la aplición quedará en http://localhost:5000/service/prediction/account/<account>. 
-Podemos especificar la cuenta a analizar añadiendo el nombre de usuario y opcionalmente, el número de tweets a analizar (máximo 200) http://localhost:5000/service/prediction/account/Quantika14?limit=200.
+Podemos especificar la cuenta a analizar añadiendo el nombre de usuario y opcionalmente, el número de tweets a analizar (máximo 200) http://localhost:5000/service/prediction/account/Quantika14?limit=200. Si queremos ejecutar el contenedor como un proceso habría que añadir la opción `-d`.
 
 Si queremos eliminar las imagenes descargadas:
-``` python
+``` bash
 docker image prune  -a -f ; docker container prune -f ; docker image prune -a -f
 ```
 

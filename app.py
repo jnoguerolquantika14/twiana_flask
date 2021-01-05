@@ -22,12 +22,11 @@ mongo = PyMongo(app)
 twiana_twitter=mongo.db.twiana_twitter 
 twiana_politics_analitycs=mongo.db.twiana_politics_analitycs
 
-@app.route('/service/prediction/account/', methods=['GET'])
-def account_prediction():
+@app.route('/service/prediction/account/<account>', methods=['GET'])
+def account_prediction(account):
     
     start_time = time.time()
 
-    account=request.args.get('account', default = 'Quantika14', type = str)
     tweets_limit = request.args.get('limit', default = 200, type = int) # El maximo de tweets sin usar cursor son 200
 
     try:

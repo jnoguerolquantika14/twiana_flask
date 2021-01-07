@@ -1,0 +1,157 @@
+paro|||desempleo
+paro|||inactividad
+paro|||pension
+paro|||huelga
+paro|||empleo
+paro|||cese
+paro|||laboral
+politica|||gobierno
+politica|||rey
+politica|||presidente
+politica|||ministro
+politica|||gabinete
+politica|||ministerio
+politica|||administracion
+politica|||estado
+politica|||junta
+politica|||delegacion
+politica|||comision
+corrupcion|||soborno
+corrupcion|||perversion
+corrupcion|||urto
+corrupcion|||unto
+corrupcion|||cohecho
+corrupcion|||deshonesto
+corrupcion|||traidor
+corrupcion|||traicionar
+problemas economicos|||huelga
+problemas economicos|||empleo
+problemas economicos|||pobre
+problemas economicos|||pobreza
+problemas economicos|||crisis
+problemas economicos|||trabajo
+problemas economicos|||banco
+problemas economicos|||acreedor
+problemas economicos|||bienes
+problemas economicos|||contrato
+problemas economicos|||cotizar
+problemas economicos|||deuda
+problemas economicos|||endeudamiento
+problemas economicos|||devaluacion
+problemas economicos|||dividendo
+problemas economicos|||demanda
+problemas economicos|||deficit
+problemas economicos|||hacienda
+problemas economicos|||hipoteca
+problemas economicos|||inflacion
+problemas economicos|||ingreso
+problemas economicos|||finanza
+problemas economicos|||factura
+problemas economicos|||estafa
+problemas economicos|||prestamo
+problemas economicos|||nomina
+problemas economicos|||liquidez
+problemas economicos|||moneda
+problemas economicos|||inversion
+problemas economicos|||transferencia
+problemas economicos|||superavit
+problemas economicos|||retencion
+problemas economicos|||remuneracion
+sanidad|||salud
+sanidad|||higiene
+sanidad|||epidemia
+sanidad|||pandemia
+sanidad|||contagio
+sanidad|||virus
+sanidad|||vacuna
+sanidad|||medicamento
+sanidad|||prevencion
+sanidad|||ecologico
+sanidad|||EvaDiazTezanos
+sanidad|||saludable
+sanidad|||alcoholico
+sanidad|||nocivo
+sanidad|||ambiente
+sanidad|||mediambiente
+sanidad|||calorias
+sanidad|||alimentacion
+sanidad|||colesterol
+sanidad|||convalecer
+sanidad|||contaminacion
+sanidad|||cirujia
+sanidad|||enfermero
+sanidad|||doctor
+sanidad|||diagnostico
+sanidad|||farmacia
+sanidad|||nutricion
+sanidad|||vitalidad
+sanidad|||rehabilitacion
+inmigracion|||frontera
+inmigracion|||integracion
+inmigracion|||exilio
+inmigracion|||emigrado
+inmigracion|||peregrinar
+inmigracion|||territorio
+inmigracion|||criollo
+inmigracion|||exilio
+problemas sociales|||muerte
+problemas sociales|||mortalidad
+problemas sociales|||trabajo
+problemas sociales|||delincuencia
+problemas sociales|||abusos
+problemas sociales|||guerra
+problemas sociales|||hambre
+problemas sociales|||paz
+problemas sociales|||obesidad
+problemas sociales|||enfermedad
+problemas sociales|||economia
+problemas sociales|||pandemia
+problemas sociales|||contagio
+problemas sociales|||propagacion
+problemas sociales|||virus
+problemas sociales|||vacuna
+problemas sociales|||ciudades
+educacion|||estudiante
+educacion|||universidad
+educacion|||beca
+educacion|||plazo
+educacion|||academia
+educacion|||alumno
+educacion|||aprendizaje
+educacion|||cultura
+educacion|||ciencia
+educacion|||diploma
+educacion|||docente
+educacion|||didactico
+educacion|||formativo
+educacion|||profesor
+educacion|||conservatorio
+educacion|||escuela
+educacion|||cursos
+educacion|||maestro
+educacion|||bachillerato
+educacion|||instituto
+educacion|||inventigacion
+educacion|||magisterio
+educacion|||selectividad
+educacion|||pizarra
+educacion|||teoria
+educacion|||pedagogo
+educacion|||docente
+educacion|||examenes
+pensiones|||recortes
+pensiones|||pension
+pensiones|||jubilar
+pensiones|||jubilacion
+pensiones|||jubilado
+pensiones|||viudedad
+pensiones|||orfandad
+pensiones|||huerfano
+pensiones|||reduccion
+pensiones|||envejecer
+pensiones|||exencion
+pensiones|||cese
+pensiones|||anticipada
+pensiones|||descanso
+pensiones|||laboral
+pensiones|||retiro

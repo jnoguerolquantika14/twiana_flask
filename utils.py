@@ -8,7 +8,7 @@ import numpy as np
 
 # Suma la puntuación score al partido p en el diccionario results
 def compute_score(results, p, score):
-    results[p[0]] += score
+    results[p] += score
     return results
 
 
@@ -45,10 +45,10 @@ def remove_badWords(word):
 def find_sense(list_words):
     posi = list()
     nega = list()
-    f_pos=open('diccionarios/positivas.txt',
-                          encoding='utf8')
-    f_neg=open('diccionarios/negativas.txt',
-                          encoding='utf8')
+    f_pos = open('diccionarios/positivas.txt',
+                 encoding='utf8')
+    f_neg = open('diccionarios/negativas.txt',
+                 encoding='utf8')
     positive_words = f_pos.read().splitlines()  # Palabras positivas
     negative_words = f_neg.read().splitlines()  # Palabras negativas
 
@@ -65,6 +65,39 @@ def find_sense(list_words):
     f_neg.close()
     return posi, nega
 
+def need_scan(text,scanned):
+    scan = True
+    for sca in scanned:  # sca será false si la palabra ya ha sido analizada
+        if text == sca:
+            scan = False
+    return scan
+
+def score_result_field(results,party,field,mode):
+    #Politics
+    if mode=='politics' or mode=='worries':
+        if field == 'description':
+            results = compute_score(results, party, config.puntuacion_description)
+        elif field == 'username':
+            results = compute_score(results, party, config.puntuacion_nombre)
+        elif field == 'account':
+            results = compute_score(results, party, config.puntuacion_account)
+
+    #Worries
+    if mode=='worries':
+        if field == 'tweets':
+            results = compute_score(results, party, config.puntuacion_tweet_worry)
+    return results
+
+def score_result_tweet_sense(results,party,array_words,field):
+    posi, nega = find_sense(array_words)
+    if len(posi) > len(nega) and field == 'tweets-pos':
+        results = compute_score(results, party, config.puntuacion_tweet_positivo)
+    elif len(posi) < len(nega) and field == 'tweets-neg':
+        results = compute_score(results, party, config.puntuacion_tweet_negativo)
+    elif len(posi) == len(nega) and field == 'tweets-neu':
+        results = compute_score(results, party, config.puntuacion_tweet_neutro)
+    return results
+
 
 def find_words(partidos, file, texto_full, field):
     text = texto_full.split()
@@ -76,61 +109,41 @@ def find_words(partidos, file, texto_full, field):
     # Abrimos el archivo y lo recorremos
     f = open(file, "r", encoding='utf8')
     lineas = f.read().splitlines()
-    scaned = list()
+    scanned = list()
     f.close()
 
     for line in lineas:  # Partido/Hashtag/Palabra del fichero
         words = line.split("|||")  # Partido/Hashtag/Palabra del fichero
-
+        party = words[0]
+        party_word = words[1]
         for text in array_words:  # Cada palabra del tweet
 
             # Solo se analizan las palabras de más de 3 caracteres o si es un username
             if len(text) > 3 or field == 'username':
 
                 # Si la palabra del tweet está contenida en la palabra o hashtag
-                if words[1].lower() in text or words[1] in text:
+                if party_word.lower() in text or party_word in text:
 
-                    scan = True
-                    for sca in scaned:  # sca será false si la palabra ya ha sido analizada
-                        if text == sca:
-                            scan = False
-                    if scan:
+                    if need_scan(text,scanned): #Si la palabra no ha sido escaneada
                         coinciden = 1
 
                         # Si no son la misma palabra, se analiza cuánto se parecen
-                        if len(text) != len(words[1]):
+                        if len(text) != len(party_word):
                             try:
                                 coinciden = difflib.SequenceMatcher(
-                                    None, text, words[1]).ratio()  # ¿Cuánto se parecen?
+                                    None, text, party_word).ratio()  # ¿Cuánto se parecen?
                             except:
                                 coinciden = 0
                         if coinciden > 0.6:  # La palabra del tweet supera el umbral para ser parecida a la palabra del fichero
                             # Esta palabra ya va a ser analizada
-                            scaned.append(text)
+                            scanned.append(text)
                             # Determinamos la puntuación de esa palabra dependiendo de que parte de los datos de Twitter se trata
-                            if field == 'description':
-                                partidos = compute_score(
-                                    partidos, words, config.puntuacion_description)
-                            elif field == 'username':
-                                partidos = compute_score(
-                                    partidos, words, config.puntuacion_nombre)
-                            elif field == 'account':
-                                partidos = compute_score(
-                                    partidos, words, config.puntuacion_account)
+                            if field == 'tweets-pos' or field == 'tweets-neg' or field == 'tweets-neu':
+                                partidos=score_result_tweet_sense(partidos,party,array_words,field)
+                            else:
+                                partidos=score_result_field(partidos,party,field,'politics')
 
-                            elif field == 'tweets-pos' or field == 'tweets-neg' or field == 'tweets-neu':
-                                posi, nega = find_sense(array_words)
-                                if len(posi) > len(nega) and field == 'tweets-pos':
-                                    partidos = compute_score(
-                                        partidos, words, config.puntuacion_tweet_positivo)
-                                elif len(posi) < len(nega) and field == 'tweets-neg':
-                                    partidos = compute_score(
-                                        partidos, words, config.puntuacion_tweet_negativo)
-                                elif len(posi) == len(nega) and field == 'tweets-neu':
-                                    partidos = compute_score(
-                                        partidos, words, config.puntuacion_tweet_neutro)
-
-    f.close()
+                                
 
     return partidos  # Devuelve el diccionario con los valores de cada partido
 
@@ -185,11 +198,13 @@ def find_worries(results, file, texto_full, field):
     # Abrimos el archivo y lo recorremos
     f = open(file, "r", encoding='utf8')
     lineas = f.read().splitlines()
-    scaned = list()
+    scanned = list()
     f.close()
 
     for line in lineas:  # Preocupacion/Hashtag/Palabra del fichero
         words = line.split("|||")  # Preocupacion/Hashtag/Palabra del fichero
+        worry = words[0]
+        worry_word = words[1]
 
         for text in array_words:  # Cada palabra del tweet
 
@@ -197,39 +212,22 @@ def find_worries(results, file, texto_full, field):
             if len(text) > 3 or field == 'username':
 
                 # Si la palabra del tweet está contenida en la palabra o hashtag
-                if text in words[1].lower() or text in words[1]:
+                if text in worry_word.lower() or text in worry_word:
 
-                    scan = True
-                    for sca in scaned:  # sca será false si la palabra ya ha sido analizada
-                        if text == sca:
-                            scan = False
-                    if scan:
+                    if need_scan(text,scanned): #Si la palabra no ha sido escaneada
                         coinciden = 1
 
                         # Si no son la misma palabra, se analiza cuánto se parecen
-                        if len(text) != len(words[1]):
+                        if len(text) != len(worry_word):
                             try:
                                 coinciden = difflib.SequenceMatcher(
-                                    None, text, words[1]).ratio()  # ¿Cuánto se parecen?
+                                    None, text, worry_word).ratio()  # ¿Cuánto se parecen?
                             except:
                                 coinciden = 0
                         if coinciden > 0.6:  # La palabra del tweet supera el umbral para ser parecida a la palabra del fichero
                             # Esta palabra ya va a ser analizada
-                            scaned.append(text)
+                            scanned.append(text)
                             # Determinamos la puntuación de esa palabra dependiendo de que parte de los datos de Twitter se trata
-                            if field == 'description':
-                                results = compute_score(
-                                    results, words, config.puntuacion_description)
-                            elif field == 'username':
-                                results = compute_score(
-                                    results, words, config.puntuacion_nombre)
-                            elif field == 'account':
-                                results = compute_score(
-                                    results, words, config.puntuacion_account)
-                            elif field == 'tweets':
-                                results = compute_score(
-                                    results, words, config.puntuacion_tweet_worry)
-
-    f.close()
+                            results=score_result_field(results,worry,field,'worries')
 
     return results  # Devuelve el diccionario con los valores de cada preocupacion

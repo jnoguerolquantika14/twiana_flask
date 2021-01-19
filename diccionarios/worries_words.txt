@@ -5,58 +5,58 @@ paro|||huelga
 paro|||empleo
 paro|||cese
 paro|||laboral
-politica|||gobierno
-politica|||rey
-politica|||presidente
-politica|||ministro
-politica|||gabinete
-politica|||ministerio
-politica|||administracion
-politica|||estado
-politica|||junta
-politica|||delegacion
-politica|||comision
-corrupcion|||soborno
-corrupcion|||perversion
-corrupcion|||urto
-corrupcion|||unto
-corrupcion|||cohecho
-corrupcion|||deshonesto
-corrupcion|||traidor
-corrupcion|||traicionar
-problemas economicos|||huelga
-problemas economicos|||empleo
-problemas economicos|||pobre
-problemas economicos|||pobreza
-problemas economicos|||crisis
-problemas economicos|||trabajo
-problemas economicos|||banco
-problemas economicos|||acreedor
-problemas economicos|||bienes
-problemas economicos|||contrato
-problemas economicos|||cotizar
-problemas economicos|||deuda
-problemas economicos|||endeudamiento
-problemas economicos|||devaluacion
-problemas economicos|||dividendo
-problemas economicos|||demanda
-problemas economicos|||deficit
-problemas economicos|||hacienda
-problemas economicos|||hipoteca
-problemas economicos|||inflacion
-problemas economicos|||ingreso
-problemas economicos|||finanza
-problemas economicos|||factura
-problemas economicos|||estafa
-problemas economicos|||prestamo
-problemas economicos|||nomina
-problemas economicos|||liquidez
-problemas economicos|||moneda
-problemas economicos|||inversion
-problemas economicos|||transferencia
-problemas economicos|||superavit
-problemas economicos|||retencion
-problemas economicos|||remuneracion
+politíca|||gobierno
+politíca|||rey
+politíca|||presidente
+politíca|||ministro
+politíca|||gabinete
+politíca|||ministerio
+politíca|||administracion
+politíca|||estado
+politíca|||junta
+politíca|||delegacion
+politíca|||comision
+corrupción|||soborno
+corrupción|||perversion
+corrupción|||urto
+corrupción|||unto
+corrupción|||cohecho
+corrupción|||deshonesto
+corrupción|||traidor
+corrupción|||traicionar
+problemas económicos|||huelga
+problemas económicos|||empleo
+problemas económicos|||pobre
+problemas económicos|||pobreza
+problemas económicos|||crisis
+problemas económicos|||trabajo
+problemas económicos|||banco
+problemas económicos|||acreedor
+problemas económicos|||bienes
+problemas económicos|||contrato
+problemas económicos|||cotizar
+problemas económicos|||deuda
+problemas económicos|||endeudamiento
+problemas económicos|||devaluacion
+problemas económicos|||dividendo
+problemas económicos|||demanda
+problemas económicos|||deficit
+problemas económicos|||hacienda
+problemas económicos|||hipoteca
+problemas económicos|||inflacion
+problemas económicos|||ingreso
+problemas económicos|||finanza
+problemas económicos|||factura
+problemas económicos|||estafa
+problemas económicos|||prestamo
+problemas económicos|||nomina
+problemas económicos|||liquidez
+problemas económicos|||moneda
+problemas económicos|||inversion
+problemas económicos|||transferencia
+problemas económicos|||superavit
+problemas económicos|||retencion
+problemas económicos|||remuneracion
 sanidad|||salud
 sanidad|||higiene
 sanidad|||epidemia
@@ -86,14 +86,14 @@ sanidad|||farmacia
 sanidad|||nutricion
 sanidad|||vitalidad
 sanidad|||rehabilitacion
-inmigracion|||frontera
-inmigracion|||integracion
-inmigracion|||exilio
-inmigracion|||emigrado
-inmigracion|||peregrinar
-inmigracion|||territorio
-inmigracion|||criollo
-inmigracion|||exilio
+inmigración|||frontera
+inmigración|||integracion
+inmigración|||exilio
+inmigración|||emigrado
+inmigración|||peregrinar
+inmigración|||territorio
+inmigración|||criollo
+inmigración|||exilio
 problemas sociales|||muerte
 problemas sociales|||mortalidad
 problemas sociales|||trabajo
@@ -111,34 +111,34 @@ problemas sociales|||propagacion
 problemas sociales|||virus
 problemas sociales|||vacuna
 problemas sociales|||ciudades
-educacion|||estudiante
-educacion|||universidad
-educacion|||beca
-educacion|||plazo
-educacion|||academia
-educacion|||alumno
-educacion|||aprendizaje
-educacion|||cultura
-educacion|||ciencia
-educacion|||diploma
-educacion|||docente
-educacion|||didactico
-educacion|||formativo
-educacion|||profesor
-educacion|||conservatorio
-educacion|||escuela
-educacion|||cursos
-educacion|||maestro
-educacion|||bachillerato
-educacion|||instituto
-educacion|||inventigacion
-educacion|||magisterio
-educacion|||selectividad
-educacion|||pizarra
-educacion|||teoria
-educacion|||pedagogo
-educacion|||docente
-educacion|||examenes
+educación|||estudiante
+educación|||universidad
+educación|||beca
+educación|||plazo
+educación|||academia
+educación|||alumno
+educación|||aprendizaje
+educación|||cultura
+educación|||ciencia
+educación|||diploma
+educación|||docente
+educación|||didactico
+educación|||formativo
+educación|||profesor
+educación|||conservatorio
+educación|||escuela
+educación|||cursos
+educación|||maestro
+educación|||bachillerato
+educación|||instituto
+educación|||inventigacion
+educación|||magisterio
+educación|||selectividad
+educación|||pizarra
+educación|||teoria
+educación|||pedagogo
+educación|||docente
+educación|||examenes
 pensiones|||recortes
 pensiones|||pension
 pensiones|||jubilar

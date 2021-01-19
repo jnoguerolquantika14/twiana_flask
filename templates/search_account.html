@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}User prediction{% endblock %}
+{% block css %}<link rel="stylesheet" type="text/css" href="{{ url_for("static", filename="search_account.css") }}">{% endblock %}
+
+{% block content %}
+<fieldset class="form-group">
+  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+  <form class="uk-form" id="formulario" method="POST" action=''>
+
+    <div class="form-group m-form__group">
+
+      <div class="input-group">
+        <label>{{form.account.label}}</label>
+        {{ form.account(class="form-control")}}
+      </div>
+    </div>
+
+</fieldset>
+<div class="form-group">
+  {{ form.submit(class="button_search") }}
+</div>
+<hr>
+{% if results %}
+<div id="clasification">
+  <tr>
+    <th>
+      Clasificacion:
+    </th>
+    <td>
+      {{results.clasificacion.partido}}
+    </td>
+  </tr>
+</div>
+<hr>
+<div class="content">
+<div id="results" style="margin-right: 5%;width:fit-content;float:left;">
+  <table class="table_results">
+    <tr>
+      <th>Result</th>
+      <th>Points</th>
+    </tr>
+    {% for key, value in results.resultados.items() %}
+    <tr>
+      <td>{{key}}</td>
+      <td>{{value}}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+<div id="worries" style="margin-right: 5%;width:fit-content;float:left;">
+  <table class="table_results">
+    <tr>
+      <th>Worries</th>
+      <th>Points</th>
+    </tr>
+    {% for key, value in results.preocupaciones.items() %}
+    <tr>
+      <td>{{key}}</td>
+      <td>{{value}}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+</div>
+{% endif %}
+
+</form>
+{% endblock %}

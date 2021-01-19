@@ -19,18 +19,21 @@ def update_collection(collection, document, fields_to_update):
     collection.update_one(document, {"$set": fields_to_update})
 
 
-def update_db_twitter(db, account, name, description, tweets):
+def update_db_twitter(db, account, name, description,location, tweets):
     document = {'account': account}
     db_element = db.find_one(document)
 
     same_name = db_element['name'] == name
     same_description = db_element['description'] == description
+    same_location = db_element['location'] == location
 
     fields_to_update = {}  # Las propiedades que se van a modificar
     if not same_name:
         fields_to_update['name'] = name
     elif not same_description:
         fields_to_update['description'] = description
+    elif not same_location:
+        fields_to_update['location'] = location
 
     fields_to_update['tweets'] = join_tweets(db_element['tweets'], tweets)
 

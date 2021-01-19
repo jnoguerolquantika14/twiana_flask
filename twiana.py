@@ -48,13 +48,13 @@ def restart_result():
 
 initial_result_worries = {
     "paro": 0,
-    "politica": 0,
-    "corrupcion": 0,
-    "problemas economicos": 0,
+    "politíca": 0,
+    "corrupción": 0,
+    "problemas económicos": 0,
     "sanidad": 0,
-    "inmigracion": 0,
+    "inmigración": 0,
     "problemas sociales": 0,
-    "educacion": 0,
+    "educación": 0,
     "pensiones": 0
 }
 
@@ -63,13 +63,13 @@ def restart_result_worries():
     global initial_result_worries
     initial_result_worries = {
         "paro": 0,
-        "politica": 0,
-        "corrupcion": 0,
-        "problemas economicos": 0,
+        "politíca": 0,
+        "corrupción": 0,
+        "problemas económicos": 0,
         "sanidad": 0,
-        "inmigracion": 0,
+        "inmigración": 0,
         "problemas sociales": 0,
-        "educacion": 0,
+        "educación": 0,
         "pensiones": 0
     }
 
@@ -82,9 +82,9 @@ def retrieve_user_data(account, limite_tweets_apionly):
 
     # Inicializa estructura resultados
     my_results = {}
+    my_results['name'] = account
     worries = {}
     worries_joined = None
-    my_results['name'] = account
 
     print("Analizando => @" + account+' con límite '+str(limite_tweets_apionly))
     # 2.- Seleccióna una API KEY para utilizar
@@ -97,39 +97,44 @@ def retrieve_user_data(account, limite_tweets_apionly):
     user = API.get_user(account)
     name = user.name
     description = user.description
+    location = user.location
+    if location=="":
+        location="None"
 
     # Modo extendido para que no se trunquen los tweets
     user_timeline = API.user_timeline(
         account, count=limite_tweets_apionly, tweet_mode='extended')
 
     user_data = {'account': account, 'name': name,
-                 'description': description, 'tweets': []}  # Los datos del usuario
+                 'description': description, 'location':location,'tweets': []}  # Los datos del usuario
     try:
 
         # 5.- Computa resultados para la Account, Username y Description
+        restart_result()
         my_results['account'] = utils.find_words(
             initial_result, 'diccionarios/compare_accounts.txt', account, 'account')
-        worries['account'] = utils.find_worries(
-            initial_result_worries, 'diccionarios/worries_words.txt', account, 'account')
         restart_result()
-        restart_result_worries()
         my_results['username'] = utils.find_words(
             initial_result, 'diccionarios/palabras_tweets.txt', name, 'username')
-        worries['username'] = utils.find_worries(
-            initial_result_worries, 'diccionarios/worries_words.txt', name, 'username')
         restart_result()
-        restart_result_worries()
         my_results['description'] = utils.find_words(
             initial_result, 'diccionarios/palabras_tweets.txt', description, 'description')
         my_results['description'] = utils.find_words(
             my_results['description'], 'diccionarios/compare_accounts.txt', description, 'description')
-        worries['description'] = utils.find_words(
-            initial_result_worries, 'diccionarios/worries_words.txt', description, 'description')
 
         # 6.- Recorre el timeline Tweet a Tweet para computar los resultados de partidos:
         process_timeline(my_results, user_timeline, user_data)
 
-        # 7.- Recorre el timeline Tweet a Tweet para computar los resultados de preocupaciones:
+        restart_result_worries()
+        worries['account'] = utils.find_worries(
+            initial_result_worries, 'diccionarios/worries_words.txt', account, 'account')
+        restart_result_worries()
+        worries['username'] = utils.find_worries(
+            initial_result_worries, 'diccionarios/worries_words.txt', name, 'username')
+        restart_result_worries()
+        worries['description'] = utils.find_words(
+            initial_result_worries, 'diccionarios/worries_words.txt', description, 'description')
+        # Recorre el timeline Tweet a Tweet para computar los resultados de preocupaciones:
         process_timeline_worries(worries, user_timeline)
         worries_joined = utils.join_worries(
             worries)  # Unimos los datos de cada field
@@ -190,6 +195,53 @@ def process_tweet_types(my_results, user_timeline, tweet_type, q, tweets_set):
     q.put({tweet_type: my_results[tweet_type]})
 
 
+def retrieve_user_worries(account, limite_tweets_apionly):
+    global API
+    global initial_result_worries
+    # 1.- Tomamos la cuenta a analizar
+
+    # Inicializa estructura resultados
+    worries = {}
+    worries_joined = None
+
+    print("Analizando => @" + account+' con límite '+str(limite_tweets_apionly))
+    # 2.- Seleccióna una API KEY para utilizar
+    api_key = select_api_key()
+    # 3.- Gestiona la conexión con Tweepy
+    connect_tweepy(api_key)
+
+    # 4.- Obtiene User, Timeline y Descripción de la cuenta
+
+    user = API.get_user(account)
+    name = user.name
+    description = user.description
+
+    # Modo extendido para que no se trunquen los tweets
+    user_timeline = API.user_timeline(
+        account, count=limite_tweets_apionly, tweet_mode='extended')
+
+    try:
+        # Busca las preocupaciones para cada dato de la cuenta
+        restart_result_worries()
+        worries['account'] = utils.find_worries(
+            initial_result_worries, 'diccionarios/worries_words.txt', account, 'account')
+        restart_result_worries()
+        worries['username'] = utils.find_worries(
+            initial_result_worries, 'diccionarios/worries_words.txt', name, 'username')
+        restart_result_worries()
+        worries['description'] = utils.find_words(
+            initial_result_worries, 'diccionarios/worries_words.txt', description, 'description')
+        # Recorre el timeline Tweet a Tweet para computar los resultados de preocupaciones:
+        process_timeline_worries(worries, user_timeline)
+        worries_joined = utils.join_worries(
+            worries)  # Unimos los datos de cada field
+
+    except Exception as e:
+        print('Ocurrió una excepción => \n')
+        traceback.print_exc()
+    return worries_joined
+
+
 def process_timeline_worries(worries, user_timeline):
     threads = []
     thread_results = []
@@ -201,9 +253,9 @@ def process_timeline_worries(worries, user_timeline):
     # Divide los tweets en 3 partes para threading
     tweets_chunks = utils.split_tweets(user_timeline, chunks_number)
 
-    for i in range(chunks_number):
+    for i in range(chunks_number):  # Hacemos un hilo por cada trozo
 
-        ti = threading.Thread(target=process_tweet_types_worries, name='Tweets {}'.format(
+        ti = threading.Thread(target=process_tweet_worries, name='Tweets {}'.format(
             i), args=(worries, tweets_chunks[i], i, q, tweets_set))
         threads.append(ti)
 
@@ -213,13 +265,14 @@ def process_timeline_worries(worries, user_timeline):
         response = q.get()
         thread_results.append(response)
 
-    worries["tweets"] = utils.join_dicts_in_list(thread_results)
+    worries["tweets"] = utils.join_dicts_in_list(
+        thread_results)  # Une el resultado de los hilos
     # Terminar hilos
     for thread in threads:
         thread.join()
 
 
-def process_tweet_types_worries(worries, tweets_chunks, chunk_number, q, tweets_set):
+def process_tweet_worries(worries, tweets_chunks, chunk_number, q, tweets_set):
     # Inicializa el diccionario para este tipo de tweet
     restart_result_worries()
     worries["tweets"] = initial_result_worries
@@ -389,3 +442,8 @@ def twiana(account, limite_tweets_apionly):
     clasif.pop('usuario')  # Eliminamos el nombre de la cuenta
 
     return user_analysis, worries, clasif['clasif2'], user_data
+
+
+def twiana_worries(account, limite_tweets_apionly):
+    worries = retrieve_user_worries(account, limite_tweets_apionly)
+    return worries

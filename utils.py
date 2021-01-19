@@ -45,11 +45,12 @@ def remove_badWords(word):
 def find_sense(list_words):
     posi = list()
     nega = list()
-
-    positive_words = open('diccionarios/positivas.txt',
-                          encoding='utf8').read().splitlines()  # Palabras positivas
-    negative_words = open('diccionarios/negativas.txt',
-                          encoding='utf8').read().splitlines()  # Palabras negativas
+    f_pos=open('diccionarios/positivas.txt',
+                          encoding='utf8')
+    f_neg=open('diccionarios/negativas.txt',
+                          encoding='utf8')
+    positive_words = f_pos.read().splitlines()  # Palabras positivas
+    negative_words = f_neg.read().splitlines()  # Palabras negativas
 
     for word in list_words:  # Palabras que vienen por parámetro
         for positive in positive_words:
@@ -60,6 +61,8 @@ def find_sense(list_words):
             if negative.lower() == replace_acentos(remove_badWords(word.lower())):  # Si hay una coincidencia
                 nega.append(negative)
 
+    f_pos.close()
+    f_neg.close()
     return posi, nega
 
 
@@ -74,6 +77,7 @@ def find_words(partidos, file, texto_full, field):
     f = open(file, "r", encoding='utf8')
     lineas = f.read().splitlines()
     scaned = list()
+    f.close()
 
     for line in lineas:  # Partido/Hashtag/Palabra del fichero
         words = line.split("|||")  # Partido/Hashtag/Palabra del fichero
@@ -84,7 +88,7 @@ def find_words(partidos, file, texto_full, field):
             if len(text) > 3 or field == 'username':
 
                 # Si la palabra del tweet está contenida en la palabra o hashtag
-                if text in words[1].lower() or text in words[1]:
+                if words[1].lower() in text or words[1] in text:
 
                     scan = True
                     for sca in scaned:  # sca será false si la palabra ya ha sido analizada
@@ -183,6 +187,7 @@ def find_worries(results, file, texto_full, field):
     f = open(file, "r", encoding='utf8')
     lineas = f.read().splitlines()
     scaned = list()
+    f.close()
 
     for line in lineas:  # Preocupacion/Hashtag/Palabra del fichero
         words = line.split("|||")  # Preocupacion/Hashtag/Palabra del fichero

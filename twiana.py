@@ -236,7 +236,7 @@ def retrieve_user_worries(account, limite_tweets_apionly):
         worries_joined = utils.join_worries(
             worries)  # Unimos los datos de cada field
 
-    except Exception as e:
+    except Exception:
         print('Ocurrió una excepción => \n')
         traceback.print_exc()
     return worries_joined
@@ -301,11 +301,11 @@ def connect_tweepy(api_key):
 
 
 # Renombra todos los atributos del diccionario a atributo_partido
-def parse_json_attrs(dict, politic_parties, attribute):
-    tamo = dict.pop(attribute)  # Se toma todo el contenido del atributo
+def parse_json_attrs(dictionary, politic_parties, attribute):
+    tamo = dictionary.pop(attribute)  # Se toma todo el contenido del atributo
     for party in politic_parties:
         # Se extrae el valor de cada array del atributo
-        dict[attribute+"_"+party] = tamo[party]
+        dictionary[attribute+"_"+party] = tamo[party]
 
 
 def modelo_Logit_binom(json_entrenamiento):
@@ -355,8 +355,6 @@ def modelo_Logit_binom(json_entrenamiento):
                  'tweets-neu_pp', 'tweets-neu_psoe', 'tweets-neu_vox',
                  'tweets-neu_podemos', 'tweets-neu_cs', 'tweets-neu_pacma'])
     datos_final_binom['iv'] = datos_final['iv']
-
-    modelos = {}
 
     # Para dejar fuera al nombre y los account_x
     data_X_train = datos_final_binom.iloc[:, 7:43]

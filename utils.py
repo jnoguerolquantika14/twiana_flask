@@ -150,11 +150,11 @@ def split_tweets(user_timeline, chunks):
     return tweets_splitted
 
 
-def join_dicts_in_list(list):
-    num_dicts = len(list)
+def join_dicts_in_list(list_):
+    num_dicts = len(list_)
     new_dict_list = []
     for i in range(num_dicts):
-        new_dict_list.append(list[i][i])
+        new_dict_list.append(list_[i][i])
     result = {}
     for d in new_dict_list:
         for k in d.keys():

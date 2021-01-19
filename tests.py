@@ -25,11 +25,11 @@ class TestTwiana(unittest.TestCase):
                 user_analysis, worries, clasif, user_data=twiana.twiana(account, tweets_limit)
 
                 try: self.assertEqual(expected_clasif, clasif)
-                except AssertionError: 
+                except AssertionError:
                     error=str(account)+': resulted '+str(clasif)+'!= expected '+str(expected_clasif)
                     self.verificationErrors.append(error)
         self.num_errors=len(self.verificationErrors)
 
-                
+
 if __name__ == "__main__":
     unittest.main()

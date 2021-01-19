@@ -3,7 +3,7 @@ from flask_pymongo import PyMongo
 from bson import json_util
 from forms import SearchForm
 
-import json
+#import json
 import twiana
 import app_utils
 import hashlib
@@ -81,7 +81,7 @@ def retrieve_clasification_worries(account,api):
             return Response(response_json, mimetype="application/json", status=201)
         else:
             return json_user_result
-    except tweepy.TweepError as e:
+    except tweepy.TweepError:
 
         return Response("Usuario no válido", status=404)
 
@@ -132,7 +132,7 @@ def account_analytics(account):
 
         print("--- Finished in %s seconds ---" % (time.time() - start_time))
         return Response(response_json, mimetype="application/json", status=201)
-    except tweepy.TweepError as e:
+    except tweepy.TweepError:
 
         return Response("Usuario no válido", status=404)
 

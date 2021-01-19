@@ -1,54 +1,54 @@
 .button_search {
-    background-color: white; 
-    color: black; 
-    border: 2px solid #008CBA;
+  background-color: white;
+  color: black;
+  border: 2px solid #008cba;
 }
-  
+
 .button_search:hover {
-    background-color: #008CBA;
-    color: white;
+  background-color: #008cba;
+  color: white;
 }
 
 table.table_results {
-    border-collapse: collapse;
-    margin: 25px 0;
-    font-size: 0.9em;
-    font-family: sans-serif;
-    min-width: 400px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  border-collapse: collapse;
+  margin: 25px 0;
+  font-size: 0.9em;
+  font-family: sans-serif;
+  min-width: 400px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
 }
 
 table.table_results th tr {
-    background-color: #009879;
-    color: #ffffff;
-    text-align: left;
+  background-color: #009879;
+  color: #ffffff;
+  text-align: left;
 }
 
-div#results{
-    margin-right: 5%;
-    width:fit-content;
-    float:left;
+div#results {
+  margin-right: 5%;
+  width: fit-content;
+  float: left;
 }
 
-div#worries{
-    margin-right: 5%;
-    width:fit-content;
-    float:left;
+div#worries {
+  margin-right: 5%;
+  width: fit-content;
+  float: left;
 }
 
 table.table_results th,
 table.table_results td {
-    padding: 12px 15px;
+  padding: 12px 15px;
 }
 
 table.table_results tbody tr {
-    border-bottom: 1px solid #dddddd;
+  border-bottom: 1px solid #dddddd;
 }
 
 table.table_results tbody tr:nth-of-type(even) {
-    background-color: #f3f3f3;
+  background-color: #f3f3f3;
 }
 
 table.table_results tbody tr:last-of-type {
-    border-bottom: 2px solid #009879;
+  border-bottom: 2px solid #009879;
 }

@@ -164,7 +164,6 @@ def join_dicts_in_list(list):
 
 def join_worries(dict_worries):
 
-    num_dicts = len(dict_worries)
     new_dict_list = []
     for i in dict_worries.keys():
         new_dict_list.append(dict_worries[i])

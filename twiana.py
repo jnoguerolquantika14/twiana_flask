@@ -14,7 +14,7 @@ import traceback
 import os
 # Predicciones
 import pandas as pd
-import numpy as np
+#import numpy as np
 import joblib
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix, accuracy_score
@@ -139,7 +139,7 @@ def retrieve_user_data(account, limite_tweets_apionly):
         worries_joined = utils.join_worries(
             worries)  # Unimos los datos de cada field
 
-    except Exception as e:
+    except Exception:
         print('Ocurrió una excepción => \n')
         traceback.print_exc()
     return my_results, worries_joined, user_data
